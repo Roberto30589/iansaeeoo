@@ -17,9 +17,9 @@ RUN apk add --no-cache \
     libpq \
     libxml2-dev \
     zip \
-    oniguruma-dev \  # Para mbstring
-    libgcc \         # Puede ser necesario para varias extensiones
-    libstdc++        # Puede ser necesario para varias extensiones
+    oniguruma-dev \
+    libgcc \
+    libstdc++
 
 # Instala extensiones de PHP
 RUN docker-php-ext-install pdo_mysql gd exif bcmath opcache zip intl soap pcntl dom mbstring
