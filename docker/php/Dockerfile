@@ -20,7 +20,13 @@ RUN apk add --no-cache \
     icu-dev \            # Para la extensión intl de PHP
     libpq \              # Si usas PostgreSQL, si no, puedes quitarlo
     libxml2-dev \        # Para la extensión dom de PHP
-    zip
+    zip \
+    # ------ ¡Añade o verifica que estas estén aquí! ------
+    oniguruma-dev \  # Para mbstring
+    libgcc \         # Puede ser necesario para varias extensiones
+    libstdc++        # Puede ser necesario para varias extensiones
+    # ----------------------------------------------------
+
 
 # Instala extensiones de PHP necesarias para Laravel
 RUN docker-php-ext-install -j$(nproc) \
