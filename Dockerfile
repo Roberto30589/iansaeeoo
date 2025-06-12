@@ -48,7 +48,6 @@ COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Configura PHP-FPM
-COPY docker/php/php-fpm.conf /etc/php8/php-fpm.d/www.conf
 COPY docker/php/php.ini /etc/php8/conf.d/custom.ini
 
 # Expone el puerto que usará Nginx
