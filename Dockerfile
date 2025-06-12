@@ -1,6 +1,21 @@
 FROM php:8.3-fpm-alpine
 
-RUN apk add --no-cache nginx nodejs npm curl git zip unzip libzip-dev libpng-dev oniguruma-dev
+RUN apk add --no-cache \
+    nginx \
+    bash \
+    nodejs \
+    npm \
+    git \
+    curl \
+    libzip-dev \
+    zip \
+    unzip \
+    mysql-client \
+    oniguruma-dev \
+    autoconf \
+    g++ \
+    make \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip
 
 RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
 
