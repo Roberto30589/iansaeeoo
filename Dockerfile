@@ -1,5 +1,6 @@
-FROM php:8.3-fpm-alpine
+FROM php:8.1-fpm-alpine
 
+# Instalar dependencias del sistema y PHP
 RUN apk add --no-cache \
     nginx \
     bash \
@@ -17,26 +18,30 @@ RUN apk add --no-cache \
     make \
     && docker-php-ext-install pdo pdo_mysql mbstring zip
 
-RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
-
+# Crear carpeta de la app
 WORKDIR /app
-COPY . /app
 
+# Copiar archivos
+COPY . .
+
+# Instalar Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Instalar dependencias de Laravel
 RUN composer install --no-dev --optimize-autoloader
 
+# Construir assets
 RUN npm install && npm run build
 
+# Dar permisos
+RUN chown -R www-data:www-data /app \
+ && chmod -R 775 /app/storage /app/bootstrap/cache
+
+# Copiar configuración de nginx
 COPY docker/nginx.conf /etc/nginx/nginx.conf
-RUN mkdir -p /run/nginx
 
-RUN chown -R www-data:www-data /app
-
-# Limpiar cachés (solo si el archivo artisan existe)
-RUN if [ -f artisan ]; then \
-    php artisan config:clear && \
-    php artisan route:clear && \
-    php artisan view:clear ; \
-    fi
-
+# Exponer puerto
 EXPOSE 8080
+
+# Script de inicio
 CMD ["sh", "/app/docker/startup.sh"]
