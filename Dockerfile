@@ -19,7 +19,10 @@ RUN apk add --no-cache \
     zip \
     oniguruma-dev \
     libgcc \
-    libstdc++
+    libstdc++\
+    nodejs \
+    npm
+
 
 # Instala extensiones de PHP
 RUN docker-php-ext-install pdo_mysql gd exif bcmath opcache zip intl soap pcntl dom mbstring
