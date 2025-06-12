@@ -1,11 +1,8 @@
 # Usa una imagen base de PHP con FPM
-FROM php:8.3-fpm-alpine
+FROM php:8.3-alpine
 
-# Instala dependencias del sistema
+# Instala dependencias del sistema y PHP
 RUN apk add --no-cache \
-    nginx \
-    supervisor \
-    mysql-client \
     git \
     unzip \
     libzip-dev \
@@ -18,41 +15,43 @@ RUN apk add --no-cache \
     libxml2-dev \
     zip \
     oniguruma-dev \
-    libgcc \
-    libstdc++\
     nodejs \
-    npm
+    npm \
+    bash \
+    mysql-client \
+    autoconf \
+    g++ \
+    make
 
-
-# Instala extensiones de PHP
+# Instala extensiones de PHP necesarias para Laravel
 RUN docker-php-ext-install pdo_mysql gd exif bcmath opcache zip intl soap pcntl dom mbstring
 
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Establece el directorio de trabajo
+# Directorio de trabajo
 WORKDIR /var/www
 
-# Copia la aplicación Laravel
+# Copia todo el código fuente
 COPY . .
 
-# Instala las dependencias de Laravel
+# Instala dependencias de Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Compila los assets de Vue (si los sirves desde Laravel)
-# Si estás sirviendo tu frontend Vue de forma independiente, omite esto
-RUN npm install && npm run build # Asegúrate de que npm esté disponible en la imagen o añádelo
+# Compila frontend si corresponde (si usas Vite o Laravel Mix)
+RUN npm install && npm run build
 
-# Configura Nginx
-COPY docker/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+# Limpia cachés de Laravel (opcional pero recomendado)
+RUN php artisan config:clear \
+ && php artisan route:clear \
+ && php artisan view:clear
 
-# Configura PHP-FPM
-COPY docker/php/php.ini /etc/php8/conf.d/custom.ini
+# Laravel necesita APP_KEY (Cloud Run debería inyectarlo como variable de entorno)
+# También puedes generarla aquí si estás en desarrollo:
+# RUN php artisan key:generate
 
-# Expone el puerto que usará Nginx
+# Exponer el puerto 8080 (Cloud Run lo requiere)
 EXPOSE 8080
 
-# Comando para iniciar Nginx y PHP-FPM con Supervisor
-COPY docker/supervisor/supervisord.conf /etc/supervisord.conf
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+# Servir Laravel con el servidor embebido de PHP
+CMD ["php", "-S", "0.0.0.0:8080", "-t", "public"]
