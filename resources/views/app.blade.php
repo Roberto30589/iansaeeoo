@@ -12,9 +12,6 @@
 
         <!-- Scripts -->
         @routes
-        <script>
-            Ziggy.url = location.origin.replace('http:', 'https:');
-        </script>
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>
