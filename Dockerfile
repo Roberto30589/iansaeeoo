@@ -1,26 +1,27 @@
 FROM php:8.3-fpm-alpine
 
-RUN apk add --no-cache nginx wget nodejs npm curl git zip unzip libzip-dev libpng-dev oniguruma-dev
+RUN apk add --no-cache nginx nodejs npm curl git zip unzip libzip-dev libpng-dev oniguruma-dev
 
-RUN mkdir -p /run/nginx
+RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
 
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-
-RUN mkdir -p /app
+WORKDIR /app
 COPY . /app
 
-RUN sh -c "wget http://getcomposer.org/composer.phar && chmod a+x composer.phar && mv composer.phar /usr/local/bin/composer"
-RUN cd /app && \
-    /usr/local/bin/composer install --no-dev
+RUN composer install --no-dev --optimize-autoloader
+
+RUN npm install && npm run build
+
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+RUN mkdir -p /run/nginx
 
 RUN chown -R www-data:www-data /app
 
+# Limpiar cachés (solo si el archivo artisan existe)
 RUN if [ -f artisan ]; then \
     php artisan config:clear && \
     php artisan route:clear && \
     php artisan view:clear ; \
     fi
 
-RUN npm install && npm run build
-
-CMD sh /app/docker/startup.sh
+EXPOSE 8080
+CMD ["sh", "/app/docker/startup.sh"]
