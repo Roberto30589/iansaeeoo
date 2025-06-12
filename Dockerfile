@@ -15,9 +15,11 @@ RUN cd /app && \
 
 RUN chown -R www-data:www-data /app
 
-RUN php artisan config:clear \
- && php artisan route:clear \
- && php artisan view:clear
+RUN if [ -f artisan ]; then \
+    php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan view:clear ; \
+    fi
 
 RUN npm install && npm run build
 
