@@ -79,4 +79,9 @@ class User extends Authenticatable
     {
         $this->notify(new ResetPasswordNotification($token));
     }
+
+    public function plants()
+    {
+        return $this->belongsToMany(Plant::class);
+    }
 }

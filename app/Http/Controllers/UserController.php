@@ -7,6 +7,8 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use App\Models\Plant;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Actions\Fortify\PasswordValidationRules;
@@ -26,8 +28,10 @@ class UserController extends Controller
     
     function add(){
         $roles = Role::all();
+        $plants = Plant::where('enabled', true)->get();
         return Inertia::render('Users/Form', [
             'roles' => $roles,
+            'plants' => $plants,
         ]);
     }
 
@@ -45,7 +49,14 @@ class UserController extends Controller
         $user = new User();
         $user->fill($validated);
         if($user->save()){
-            $user->roles()->sync($request->roles);
+            // If roles are provided, associate them with the user
+            if ($request->roles) {
+                $user->roles()->sync($request->roles);
+            }
+            // If plants are provided, associate them with the user
+            if ($request->plants) {
+                $user->plants()->sync($request->plants);
+            }
             return redirect()->route('users')->with('success', 'Usuario creado correctamente');
         }else{
             return redirect()->back()->with('error', 'Error al crear el usuario');
@@ -55,11 +66,13 @@ class UserController extends Controller
 
     public function select($id)
     {
-        $user = User::with('roles')->findOrFail($id);
+        $user = User::with('roles','plants')->findOrFail($id);
         $roles = Role::all();
+        $plants = Plant::where('enabled', true)->get();
         return Inertia::render('Users/Select', [
             'user' => $user,
             'roles' => $roles,
+            'plants' => $plants,
         ]);
     }
 
@@ -83,6 +96,7 @@ class UserController extends Controller
         $user->fill($validated);
         if($user->save()){
             $user->roles()->sync($request->roles);
+            $user->plants()->sync($request->plants);
             return redirect()->route('users')->with('success', 'Usuario actualizado correctamente');
         }else{
             return redirect()->back()->with('error', 'Error al actualizar el usuario');

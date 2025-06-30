@@ -1,6 +1,5 @@
 <script setup>
 import AppMain from '@/Layouts/AppMain.vue';
-import Welcome from '@/Components/Welcome.vue';
 </script>
 
 <template>

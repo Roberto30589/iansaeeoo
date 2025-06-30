@@ -7,6 +7,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PlantController;
 
 Route::get('/', function () {
     /*
@@ -63,4 +64,12 @@ Route::middleware([
     Route::get('/users/{id}',[UserController::class, 'select'])->name('users/select');
     Route::post('/users/{id}/update',[UserController::class, 'update'])->name('users/update');
 
+    //plantas
+    Route::get('/plants',[PlantController::class, 'index'])->name('plants');
+    Route::get('/plants/table',[PlantController::class, 'table'])->name('plants/table');
+    Route::get('/plants/add',[PlantController::class, 'add'])->name('plants/add');
+    Route::post('/plants/create',[PlantController::class, 'create'])->name('plants/create');
+    Route::get('/plants/{id}',[PlantController::class, 'select'])->name('plants/select');
+    Route::post('/plants/{id}/update',[PlantController::class, 'update'])->name('plants/update');
+    
 });

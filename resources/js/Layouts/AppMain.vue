@@ -12,7 +12,7 @@
     
     
     import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-    import { faUser,faHouse,faBuilding,faGear,faUsers,faLock,faChevronDown,faChevronUp } from '@fortawesome/free-solid-svg-icons'
+    import { faHouse,faBuilding,faGear,faUsers,faLock} from '@fortawesome/free-solid-svg-icons'
 
     import ToastContainer from '@/Components/ToastContainer.vue';
     import toast from '@/Stores/toast';
@@ -146,6 +146,11 @@
             <AsideLink :href="route('users')" :active="route().current('users')">
                 <FontAwesomeIcon :icon="faUsers" size="lg" class="min-w-6 pr-2" />
                 Usuarios
+            </AsideLink>
+
+            <AsideLink :href="route('plants')" :active="route().current('plants')">
+                <FontAwesomeIcon :icon="faBuilding" size="lg" class="min-w-6 pr-2" />
+                Plantas
             </AsideLink>
 
             <AsideDropdown :aside="showingNavigationDropdown">

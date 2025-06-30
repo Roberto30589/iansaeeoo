@@ -9,6 +9,7 @@ import TextInput from '@/Components/TextInput.vue';
 
 const props = defineProps({
     roles: Array,
+    plants: Array, // Uncomment if you need to handle plants
 });
 
 const form = useForm({
@@ -17,6 +18,7 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     roles: [],   
+    plants: [], // Uncomment if you need to handle plants
     terms: true,
 });
 
@@ -25,6 +27,14 @@ const toggleRole = (roleId) => {
         form.roles = form.roles.filter(id => id !== roleId);
     } else {
         form.roles.push(roleId);
+    }
+};
+
+const togglePlant = (plantId) => {
+    if (form.plants.includes(plantId)) {
+        form.plants = form.plants.filter(id => id !== plantId);
+    } else {
+        form.plants.push(plantId);
     }
 };
 
@@ -79,6 +89,18 @@ const submit = () => {
                                 v-bind:value="rol.id"
                                 />
                                 <span class="ml-2">{{ rol.name }}</span>
+                            </label>
+                        </div>
+                        <hr>
+                        <div class="my-4">
+                            <h2><b>Plantas del usuario</b></h2>
+                            <label v-for="(plant,index) in plants" :key="plant.id" class="flex items-center mt-4">
+                                <input 
+                                type="checkbox" 
+                                @change="togglePlant(plant.id)"
+                                v-bind:value="plant.id"
+                                />
+                                <span class="ml-2">{{ plant.name }}</span>
                             </label>
                         </div>
 

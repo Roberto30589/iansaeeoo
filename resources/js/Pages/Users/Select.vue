@@ -9,6 +9,7 @@ import TextInput from '@/Components/TextInput.vue';
 const props = defineProps({
     user: Object,
     roles: Array,
+    plants: Array, // Si necesitas manejar plantas
 });
 
 const form = useForm({
@@ -16,6 +17,7 @@ const form = useForm({
     email: props.user.email   || '', // Asegúrate de manejar valores nulos o no definidos
     //obtener los id los roles del usuario
     roles: props.user.roles.map(role => role.id),    
+    plants: props.user.plants ? props.user.plants.map(plant => plant.id) : [], // Si necesitas manejar plantas
     updatePassword: false, // Indica si se actualizará la contraseña
     password: '',
     password_confirmation: '',
@@ -35,6 +37,14 @@ const toggleRole = (roleId) => {
         form.roles = form.roles.filter(id => id !== roleId);
     } else {
         form.roles.push(roleId);
+    }
+};
+
+const togglePlant = (plantId) => {
+    if (form.plants.includes(plantId)) {
+        form.plants = form.plants.filter(id => id !== plantId);
+    } else {
+        form.plants.push(plantId);
     }
 };
 
@@ -77,15 +87,32 @@ const toggleRole = (roleId) => {
 
                         <div class="my-4">
                             <h2><b>Roles del usuario</b></h2>
-                            <label v-for="(rol,index) in roles" :key="rol.id" class="flex items-center mt-4">
-                                <input 
-                                type="checkbox" 
-                                :checked="form.roles.includes(rol.id)"
-                                @change="toggleRole(rol.id)"
-                                v-bind:value="rol.id"
-                                />
-                                <span class="ml-2">{{ rol.name }}</span>
-                            </label>
+                            <div class="flex flex-wrap gap-4 pt-2">
+                                <label v-for="(rol,index) in roles" :key="rol.id" class="flex w-52 items-center border px-2 py-1 rounded">
+                                    <input 
+                                    type="checkbox" 
+                                    :checked="form.roles.includes(rol.id)"
+                                    @change="toggleRole(rol.id)"
+                                    v-bind:value="rol.id"
+                                    />
+                                    <span class="ml-2">{{ rol.name }}</span>
+                                </label>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="my-4">
+                            <h2><b>Plantas del usuario</b></h2>
+                            <div class="flex flex-wrap gap-4 pt-2">
+                                <label v-for="(plant,index) in plants" :key="plant.id" class="flex w-52 items-center border px-2 py-1 rounded">
+                                    <input 
+                                    type="checkbox" 
+                                    :checked="form.plants.includes(plant.id)"
+                                    @change="togglePlant(plant.id)"
+                                    v-bind:value="plant.id"
+                                    />
+                                    <span class="ml-2">{{ plant.name }}</span>
+                                </label>
+                            </div>
                         </div>
                         <hr>
                         <div class="mt-4">
