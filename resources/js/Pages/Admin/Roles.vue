@@ -21,7 +21,6 @@ import ButtonColor from '@/Components/ButtonColor.vue';
 
 DataTable.use(DataTablesCore);
 
-
 const props = defineProps({
     permissions: Array,
 });
