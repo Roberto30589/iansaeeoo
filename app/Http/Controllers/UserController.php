@@ -17,7 +17,7 @@ class UserController extends Controller
 {
     use PasswordValidationRules;
     
-    function index(){
+    public function index(){
         return Inertia::render('Users/Index');
     }
     
@@ -26,7 +26,7 @@ class UserController extends Controller
         return DataTables::of($users)->make(true);
     }
     
-    function add(){
+    public function add(){
         $roles = Role::all();
         $plants = Plant::where('enabled', true)->get();
         return Inertia::render('Users/Form', [
@@ -81,10 +81,10 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            //si el email es diferente al actual, entonces se valida que sea unico            
+            //si el email es diferente al actual, entonces se valida que sea unico
             'email' => ['required', 'string', 'email', 'max:255', $request->email == $user->email ? '' : 'unique:users'],
             //si updatePassword es true, entonces se valida la contraseña, pero si no, no se valida
-            'password' => $request->updatePassword ? $this->passwordRules() : '',         
+            'password' => $request->updatePassword ? $this->passwordRules() : '',
         ]);
 
         if(!$request->updatePassword){
@@ -102,12 +102,18 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'Error al actualizar el usuario');
         }
     }
-
-    public function delete(Request $request, $id)
+    
+    public function delete($id)
     {
-        $user = User::findOrFail($id);
-        $user->enabled = 0;
+        $user = User::findOrFail($id);    
+
+        $timestamp = now()->timestamp;
+        $user->email = $user->email . '_deleted_' . $timestamp;
         $user->save();
-        return redirect()->route('users')->with('success', 'Usuario eliminado correctamente');
+        if ($user->delete()) {
+            return back()->with('success', 'Usuario eliminado correctamente');
+        } else {
+            return back()->with('error', 'Error al eliminar al Usuario');
+        }
     }
 }

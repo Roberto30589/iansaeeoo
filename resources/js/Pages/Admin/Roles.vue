@@ -8,14 +8,16 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import ButtonGroup from '@/Components/ButtonGroup.vue';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { fas } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { faAdd,faPen,faTrash,faUserTag } from '@fortawesome/free-solid-svg-icons';
 
 import DataTable from 'datatables.net-vue3';
 import DataTablesCore from 'datatables.net-dt';
+import {DataTableEs} from '@/Composables/datatableEs.js';
 
 import { useForm } from '@inertiajs/vue3';
 import {onMounted, ref} from "vue";
+import ButtonColor from '@/Components/ButtonColor.vue';
 
 DataTable.use(DataTablesCore);
 
@@ -26,12 +28,12 @@ const props = defineProps({
 
 const columns = [
   { data: 'id', title: 'Nº',width:'1%' },
-  { data: 'name', title: 'Role' },
+  { data: 'name', title: 'Role',width:'10%' },
   //permisos
     { data: 'permissions', title: 'Permisos', render: (data) => {
         return data.map(permission => permission.name).join(', ');
     }},
-  { data: null,render: '#action', title: 'Acción',width:'1%',className: 'px-4' }
+  { data: null,render: '#action', title: 'Acción',width:'1%', className: 'ip-0' }
 ];
 
 const form = useForm ({
@@ -96,17 +98,6 @@ const togglePermission = (permissionId) => {
 </script>
 <template>
     <AppMain title="roles">
-        <template #header >
-            <div class="flex flex-row items-center" >
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight grow">
-                    Listado de Roles
-                </h2>
-                <button @click="add" class="bg-green-600 text-white px-4 py-2 rounded">
-                    <font-awesome-icon :icon="fas.faAdd"/>  <span class="hidden sm:inline">Agregar Role</span>
-                </button>
-            </div>
-        </template>
-
         <Modal :show="modalform" ref="formulario">
             <form @submit.prevent="store" class="p-4 sm:p-6 lg:p-8" >
                 <h1>Rol</h1>
@@ -145,28 +136,37 @@ const togglePermission = (permissionId) => {
                 </div>
             </form>
         </Modal>
-
-        <div class="bg-white w-max sm:w-auto my-8 mx-auto max-w-7xl">
-            <DataTable :ajax="route('roles/table')" :columns="columns" ref="table" :options="{select: true,serverSide: true,}" class="display cell-border compact">
-                <template #action="props">                    
-                    <ButtonGroup>
-                        <button
-                            @click="rowEdit(props.rowData)"
-                            title="Editar"
-                            class="bg-blue-500 text-white px-4 py-2 rounded"
-                            >
-                            <font-awesome-icon :icon="fas.faPen"/>
-                        </button>
-                        <button
-                            @click="edit(props.rowData)"
-                            title="Eliminar"
-                            class="bg-red-500 text-white px-4 py-2 rounded"
-                            >
-                            <font-awesome-icon :icon="fas.faTrash"/>
-                        </button>
-                    </ButtonGroup>
-                </template>
-            </DataTable>
+        <div class="bg-white w-max sm:w-auto my-8 mx-auto max-w-7xl mt-2 rounded-lg shadow-md">
+            <div class="flex flex-row items-center justify-between p-2">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight grow">
+                    <font-awesome-icon :icon="faUserTag"/>
+                    Listado de Roles
+                </h2>
+                <ButtonColor color="green" @click="add">
+                    <font-awesome-icon :icon="faAdd" class="size-4 sm:pe-2"/>
+                    <span class="hidden sm:inline">Agregar Rol</span>
+                </ButtonColor>
+            </div>
+            <div class="px-2">
+                <DataTable :ajax="route('roles/table')" :columns="columns" ref="table" :options="{select: true,serverSide: true,language:DataTableEs}" class="display cell-border compact">
+                    <template #action="props">                    
+                        <ButtonGroup>
+                            <ButtonColor color="blue"
+                                @click="rowEdit(props.rowData)"
+                                title="Editar"
+                                >
+                                <font-awesome-icon :icon="faPen" class="size-4"/>
+                            </ButtonColor>
+                            <ButtonColor color="red"
+                                @click="edit(props.rowData)"
+                                title="Eliminar"
+                                >
+                                <font-awesome-icon :icon="faTrash" class="size-4"/>
+                            </ButtonColor>
+                        </ButtonGroup>
+                    </template>
+                </DataTable>
+            </div>
         </div>
     </AppMain>
 </template>

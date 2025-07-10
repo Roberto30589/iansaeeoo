@@ -10,9 +10,8 @@
     import DropdownLink from '@/Components/DropdownLink.vue';
     import AsideLink from '@/Components/AsideLink.vue';
     
-    
     import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-    import { faHouse,faBuilding,faGear,faUsers,faLock} from '@fortawesome/free-solid-svg-icons'
+    import { faUser,faHouse,faBuilding,faGear,faUserTag,faLock,faUsers, faPersonWalkingArrowRight} from '@fortawesome/free-solid-svg-icons'
 
     import ToastContainer from '@/Components/ToastContainer.vue';
     import toast from '@/Stores/toast';
@@ -23,18 +22,9 @@
 
     const showingNavigationDropdown = ref(false);
 
-    const switchToTeam = (team) => {
-        router.put(route('current-team.update'), {
-            team_id: team.id,
-        }, {
-            preserveState: false,
-        });
-    };
-
     const logout = () => {
         router.post(route('logout'));
     };
-
 
     //Esto es para los mensajes de success y error
     const page = usePage();
@@ -67,48 +57,49 @@
     });
 
     onUnmounted(()=> removeFinishEventListener());
-
 </script>
 
 <template>
     <Head :title="title" />
     <Banner />
-    <nav class="fixed z-50 min-w-full dark:bg-[#01616d] dark:border-[#01616d]">
+    <nav class="fixed z-50 top-0 left-0 right-0  bg-[#005856] border-[#005856]">
         <!-- Primary Navigation Menu -->
         <div class="flex justify-between h-12">
-            <div class="shrink-0 flex items-center w-52">
+            <div class="shrink-0 flex items-center justify-between sm:w-52">
                 <Link :href="route('dashboard')">
-                    <ApplicationMark class="block h-6  w-auto  px-2" />
+                    <ApplicationMark class="block h-9 w-auto px-1 text-[#00be00]" />
                 </Link>
-                <span class="self-center text-lg font-semibold whitespace-nowrap dark:text-white px-2 hidden sm:inline">IANSA EEOO</span>
+                <span class="self-center text-lg font-black whitespace-nowrap text-[#fff] px-1 hidden sm:inline">IANSA EEOO</span>
                 <!-- Hamburger -->
-                <div class="flex items-center">
-                    <button class="inline-flex items-center justify-center p-1 rounded-md text-green-400 hover:text-green-500 hover:bg-[#001113] focus:outline-none focus:bg-[#001113] focus:text-green-500 transition duration-150 ease-in-out" @click="showingNavigationDropdown = ! showingNavigationDropdown">
+                <div class="flex items-center mb-1">
+                    <button
+                        @click="showingNavigationDropdown = !showingNavigationDropdown"
+                        class="inline-flex items-center justify-center rounded-md p-1 text-green-400 hover:ring-green-400 hover:ring-2 hover:text-green-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500 transition"
+                        aria-label="Abrir menú de navegación"
+                        :aria-expanded="showingNavigationDropdown.toString()"
+                        aria-controls="mobile-menu"
+                    >
                         <svg
-                            class="size-7 transition-transform duration-300"
-                            stroke="currentColor"
-                            :class="showingNavigationDropdown ? 'rotate-180 sm:rotate-0' : 'rotate-0 sm:rotate-180'"
-                            fill="none"
-                            viewBox="0 0 24 24"
+                        :class="{ 'rotate-180 scale-110': showingNavigationDropdown }"
+                        class="h-6 w-6 transition-transform duration-300 ease-in-out"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                         >
-                            <path
-                                class="inline-flex"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M8 6L16 12L8 18"
-                            />
+                        <path v-if="!showingNavigationDropdown" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                        <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
-
                 </div>
             </div>
             <div class="flex items-center px-2">
                 <Dropdown align="right" width="48">
                     <template #trigger>
-                        <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" aria-expanded="false" data-dropdown-toggle="dropdown-user">
+                        <button type="button" class="flex p-2 text-[#005856] bg-[#00be00] rounded-full ring-2 ring-emerald-600 focus:ring-2 focus:ring-gray-300" aria-expanded="false" data-dropdown-toggle="dropdown-user">
                             <span class="sr-only">Open user menu</span>
-                            <img class="w-8 h-8 rounded-full" src="https://flowbite.com/docs/images/people/profile-picture-5.jpg" alt="user photo">
+                            <FontAwesomeIcon :icon="faUser" class="size-5"/>
                         </button>
                     </template>
 
@@ -135,12 +126,18 @@
         </div>
     </nav>
 
-    <aside class="fixed top-0 z-40 h-screen bg-[#001113] transition-all duration-300" :class="{'w-52 left-0 sm:w-10 sm:left-0': showingNavigationDropdown, 'w-52 -left-52 sm:w-52 sm:left-0': ! showingNavigationDropdown }">
+    <aside class="fixed top-0 z-40 h-screen bg-[#002424] transition-all duration-300" :class="{'w-52 left-0 sm:w-10 sm:left-0': showingNavigationDropdown, 'w-52 -left-52 sm:w-52 sm:left-0': ! showingNavigationDropdown }">
         <div class="flex flex-col h-full pt-14">
             <!-- Navigation Links -->
             <AsideLink :href="route('dashboard')" :active="route().current('dashboard')">
                 <FontAwesomeIcon :icon="faHouse" size="lg" class="min-w-6 pr-2" />
-                Dashboard
+                Panel Inicial
+            </AsideLink>
+
+            
+            <AsideLink :href="route('actionplans')" :active="route().current('actionplans')">
+                <FontAwesomeIcon :icon="faPersonWalkingArrowRight" size="lg" class="min-w-6 pr-2" />
+                Planes de Acción
             </AsideLink>
 
             <AsideLink :href="route('users')" :active="route().current('users')">
@@ -153,18 +150,18 @@
                 Plantas
             </AsideLink>
 
-            <AsideDropdown :aside="showingNavigationDropdown">
-                <template #trigger>
+            <AsideDropdown :aside="showingNavigationDropdown" :active="route().current('admin/*')" :open="route().current('admin/*')">
+                <template #trigger >
                     <FontAwesomeIcon :icon="faGear" size="lg" class="min-w-6 pr-2" />
                     Administración
                 </template>
                 <template #content>
-                    <AsideDropdownLink :href="route('permissions')" :active="route().current('permissions')">
+                    <AsideDropdownLink :href="route('admin/permissions')" :active="route().current('admin/permissions')">
                         <FontAwesomeIcon :icon="faLock" size="lg" class="min-w-7 pr-1" />
                         Pemisos
                     </AsideDropdownLink>
-                    <AsideDropdownLink :href="route('roles')" :active="route().current('roles')">
-                        <FontAwesomeIcon :icon="faUsers" size="lg" class="min-w-8 pr-1" />
+                    <AsideDropdownLink :href="route('admin/roles')" :active="route().current('admin/roles')">
+                        <FontAwesomeIcon :icon="faUserTag" size="lg" class="min-w-8 pr-1" />
                         Roles
                     </AsideDropdownLink>
                 </template>
@@ -172,13 +169,8 @@
         </div>
     </aside>
     <!-- Page Content -->
-    <main class="pt-12" :class="{'ms-0 sm:ms-10': showingNavigationDropdown, 'ms-0 sm:ms-52': ! showingNavigationDropdown }">
+    <main class="pt-12 min-h-screen overflow-x-auto transition-margin-left duration-300" :class="{'ms-0 sm:ms-10': showingNavigationDropdown, 'ms-0 sm:ms-52': ! showingNavigationDropdown }">
         <slot />
     </main>
     <ToastContainer/>
 </template>
-<style scoped>
-    main {
-        transition: margin-left 0.3s ease;
-    }
-</style>

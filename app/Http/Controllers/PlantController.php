@@ -4,15 +4,22 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\Request;
-use App\Models\Plant;
-use App\Models\Area;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
+use App\Models\Plant;
+use App\Models\Area;
+
 class PlantController extends Controller
 {
+    /**
+     * The maximum length for plant and area names.
+     *
+     * @var int
+     */
+    protected $maxlength = 255;
 
-    function index(){
+    public function index(){
         return Inertia::render('Plants/Index');
     }
     
@@ -24,7 +31,7 @@ class PlantController extends Controller
         return DataTables::of($plants)->make(true);
     }
     
-    function add(){
+    public function add(){
         return Inertia::render('Plants/Form');
     }
 
@@ -32,11 +39,11 @@ class PlantController extends Controller
     {
         $input = $request->all();
         $validated = Validator::make($input, [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:'. $this->maxlength],
             //array de areas
             'areas' => ['required', 'array'],
             //las areas requieren un nombre
-            'areas.*.name' => ['required', 'string', 'max:255'],
+            'areas.*.name' => ['required', 'string', 'max:'. $this->maxlength],
             //las areas pueden tener un enabled
             'areas.*.enabled' => ['nullable', 'boolean'],
         ])->after(function ($validator) use ($input) {
@@ -54,7 +61,7 @@ class PlantController extends Controller
             // Check if areas are not empty
             if (empty($input['areas'])) {
                 $validator->errors()->add('areas', 'Debe proporcionar al menos una área.');
-            }   
+            }
         })->validate();
 
         $plant = new Plant();
@@ -87,16 +94,16 @@ class PlantController extends Controller
         $plant = Plant::findOrFail($id);
         $input = $request->all();
         $validated = Validator::make($input, [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:'. $this->maxlength],
             //array de areas
             'areas' => ['required', 'array'],
             //las areas requieren un nombre y pueden tener un id si ya existen
             'areas.*.id' => ['nullable', 'integer', 'exists:areas,id'],
             //las areas requieren un nombre
-            'areas.*.name' => ['required', 'string', 'max:255'],
+            'areas.*.name' => ['required', 'string', 'max:'. $this->maxlength],
             //las areas pueden tener un enabled
             'areas.*.enabled' => ['nullable', 'boolean'],
-        ])->after(function ($validator) use ($input, $plant) {
+        ])->after(function ($validator) use ($input) {
             // Check if areas are unique
             $areaNames = array_column($input['areas'], 'name');
             if (count($areaNames) !== count(array_unique($areaNames))) {
@@ -118,7 +125,7 @@ class PlantController extends Controller
         if($plant->save()){
             //sync areas
             foreach ($validated['areas'] as $areaData) {
-                $area = Area::updateOrCreate(
+                Area::updateOrCreate(
                     ['id' => $areaData['id'] ?? null, 'plant_id' => $plant->id],
                     ['name' => $areaData['name'], 'enabled' => $areaData['enabled']]
                 );
@@ -126,6 +133,17 @@ class PlantController extends Controller
             return redirect()->route('plants')->with('success', 'Planta actualizada correctamente');
         }else{
             return redirect()->back()->with('error', 'Error al actualizar la planta');
+        }
+    }
+
+    public function delete($id)
+    {
+        $plant = Plant::findOrFail($id);
+        $plant->enabled = false; // Disable the plant instead of deleting it
+        if ($plant->save()) {
+            return back()->with('success', 'Planta eliminada correctamente');
+        } else {
+            return back()->with('error', 'Error al eliminar la planta');
         }
     }
 }

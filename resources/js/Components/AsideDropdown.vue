@@ -6,9 +6,17 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    active: {
+        type: Boolean,
+        default: false,
+    },
+    open: {
+        type: Boolean,
+        default: false,
+    },
 });
 
-let open = ref(false);
+let open = ref(props.open);
 
 const closeOnEscape = (e) => {
     if (open.value && e.key === 'Escape') {
@@ -20,9 +28,9 @@ onMounted(() => document.addEventListener('keydown', closeOnEscape));
 onUnmounted(() => document.removeEventListener('keydown', closeOnEscape));
 
 const classes = computed(() => {
-    return open.value
-        ? 'inline-flex w-52 h-10 items-center px-1 border-l-4 border-emerald-700 text-sm text-white bg-emerald-800 hover:border-gray-300 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out'
-        : 'inline-flex w-52 h-10 items-center px-1 border-l-4 border-transparent text-sm text-white hover:bg-emerald-800 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out';
+    return open.value || props.active
+        ? 'inline-flex w-52 h-10 items-center px-1 border-l-4 border-[#00be00] text-sm text-white bg-[#005856] hover:border-gray-300 focus:outline-none focus:border-indigo-700 transition duration-150 ease-in-out'
+        : 'inline-flex w-52 h-10 items-center px-1 border-l-4 border-transparent text-sm text-white hover:bg-[#005856] hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 transition duration-150 ease-in-out';
 });
 </script>
 
@@ -46,9 +54,6 @@ const classes = computed(() => {
                 />
             </svg>
         </div>
-
-        <!-- Full Screen Dropdown Overlay -->
-        <div v-show="open" class="fixed inset-0 z-51" @click="open = false" />
 
         <div
             v-show="open"

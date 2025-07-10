@@ -1,13 +1,4 @@
-export default {
-    name: 'DataTableEs',
-    data() {
-        return {
-            DataTableEs
-        };
-    }
-};
-
-const DataTableEs = {
+export const DataTableEs = {
     "lengthMenu": "_MENU_ Datos por página",
     "zeroRecords": "No se encuentra ningun registro",
     "info": "Página _PAGE_ de _PAGES_",

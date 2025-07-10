@@ -21,7 +21,7 @@ defineExpose({ focus: () => select.value.focus() });
 <template>
     <select
         ref="select"
-        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+        class="border-stone-300 focus:border-stone-500 focus:ring-stone-500 rounded-md shadow-sm bg-white"
         :value="modelValue"
         @change="$emit('update:modelValue', $event.target.value)"
     >

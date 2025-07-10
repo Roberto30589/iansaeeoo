@@ -4,7 +4,12 @@ import { computed } from 'vue';
 const props = defineProps({
     type: {
         type: String,
-        default: 'submit',
+        default: 'href', // Tipo de botón por defecto
+    },
+    href: String,
+    target: {
+        type: String,
+        default: '_self', // Target por defecto
     },
     color: {
         type: String,
@@ -33,7 +38,10 @@ const colorClasses = computed(() => {
 </script>
 
 <template>
-    <button :type="type" :class="['inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest disabled:opacity-100 transition ease-in-out duration-150', colorClasses]">
+    <a v-if="type === 'href'" :href="href" type="href" :target="target" :class="['inline-flex items-center px-2 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest disabled:opacity-100 transition ease-in-out duration-150', colorClasses]">
+        <slot />
+    </a>
+    <button v-else :type="type" :class="['inline-flex items-center px-2 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest disabled:opacity-100 transition ease-in-out duration-150', colorClasses]">
         <slot />
     </button>
 </template>
